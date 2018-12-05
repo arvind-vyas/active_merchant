@@ -48,6 +48,7 @@ module ActiveMerchant #:nodoc:
         add_shopper_interaction(post, payment, options)
         add_address(post, options)
         add_installments(post, options) if options[:installments]
+        add_3ds(post, options) if options[:execute_threed]
         commit('authorise', post)
       end
 
@@ -256,6 +257,11 @@ module ActiveMerchant #:nodoc:
         post[:installments] = {
           value: options[:installments]
         }
+      end
+
+      def add_3ds(post, options)
+        post[:additionalData] = { executeThreeD: 'true' }
+        post[:browserInfo] = { userAgent: options[:user_agent], acceptHeader: options[:accept_header] }
       end
 
       def parse(body)
